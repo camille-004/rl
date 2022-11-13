@@ -1,5 +1,3 @@
-from typing import Union
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -28,7 +26,7 @@ class MLP(nn.Module):
         return x
 
 
-def init_weights(m: Union[MLP, nn.Linear]) -> None:
+def init_weights(m: nn.Module) -> None:
     if isinstance(m, nn.Linear):
         nn.init.xavier_normal_(m.weight)
         m.bias.data.fill_(0)
