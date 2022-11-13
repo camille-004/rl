@@ -7,15 +7,21 @@ import torch.nn.functional as F
 
 class MLP(nn.Module):
     def __init__(
-        self, _input_dim: int, _hidden_dim: int, _output_dim: int
+        self,
+        _input_dim: int,
+        _hidden_dim: int,
+        _output_dim: int,
+        dropout: float,
     ) -> None:
         super().__init__()
 
         self.fc_1 = nn.Linear(_input_dim, _hidden_dim)
         self.fc_2 = nn.Linear(_hidden_dim, _output_dim)
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.fc_1(x)
+        x = self.dropout(x)
         x = F.relu(x)
         x = self.fc_2(x)
 
