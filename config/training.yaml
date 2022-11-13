@@ -1,0 +1,4 @@
+seed: 42
+max_trajectory: 500
+print_every: 10
+n_trials: 25

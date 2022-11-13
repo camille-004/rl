@@ -1,0 +1,9 @@
+name: torch-rl
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - gym
+  - pytorch-cuda=11.7
+  - pytorch
+  - jupyter
