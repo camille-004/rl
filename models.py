@@ -1,29 +1,60 @@
+from typing import Optional, Sequence, Type, Union
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class MLP(nn.Module):
     def __init__(
         self,
         _input_dim: int,
-        _hidden_dim: int,
         _output_dim: int,
-        dropout: float,
+        _hidden_dims: Sequence[int] = (),
+        norm_layers: Optional[
+            Union[Type[nn.Module], Sequence[Type[nn.Module]]]
+        ] = None,
+        activ_layers: Optional[
+            Union[Type[nn.Module], Sequence[Type[nn.Module]]]
+        ] = nn.ReLU,
     ) -> None:
         super().__init__()
 
-        self.fc_1 = nn.Linear(_input_dim, _hidden_dim)
-        self.fc_2 = nn.Linear(_hidden_dim, _output_dim)
-        self.dropout = nn.Dropout(dropout)
+        if norm_layers:
+            if isinstance(norm_layers, list):
+                assert len(norm_layers) == len(_hidden_dims)
+            else:
+                norm_layers = [norm_layers] * len(_hidden_dims)
+        else:
+            norm_layers = [None] * len(_hidden_dims)
+
+        if activ_layers:
+            if isinstance(activ_layers, list):
+                assert len(activ_layers) == len(_hidden_dims)
+            else:
+                activ_layers = [activ_layers] * len(_hidden_dims)
+        else:
+            activ_layers = [None] * len(_hidden_dims)
+
+        print(activ_layers)
+        dims = [_input_dim] + list(_hidden_dims)
+        model = []
+
+        for in_dim, out_dim, norm, activ in zip(
+            dims[:-1], dims[1:], norm_layers, activ_layers
+        ):
+            layer = [nn.Linear(in_dim, out_dim)]
+            if norm is not None:
+                layer.append(norm(out_dim))
+            if activ is not None:
+                layer.append(activ())
+
+            model += layer
+
+        model.append(nn.Linear(dims[-1], _output_dim))
+        self.model = nn.Sequential(*model)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.fc_1(x)
-        x = self.dropout(x)
-        x = F.relu(x)
-        x = self.fc_2(x)
-
-        return x
+        return self.model(x)
 
 
 def init_weights(m: nn.Module) -> None:
