@@ -1,2 +1,5 @@
 [tool.black]
 line-length = 79
+
+[tool.isort]
+force_grid_wrap = 3
