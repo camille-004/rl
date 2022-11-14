@@ -5,6 +5,8 @@ import torch.nn as nn
 
 
 class MLP(nn.Module):
+    """Class to build an MLP."""
+
     def __init__(
         self,
         _input_dim: int,
@@ -17,6 +19,28 @@ class MLP(nn.Module):
             Union[Type[nn.Module], Sequence[Type[nn.Module]]]
         ] = nn.ReLU,
     ) -> None:
+        """
+        Parameters
+        ----------
+        _input_dim : int
+            Input dimensions for MLP (size of observation space).
+        _output_dim : int
+            Output dimensions for MLP (size of action space).
+        _hidden_dims : Sequence[int]
+            List of hidden dimensions for MLP.
+        norm_layers : Optional[
+            Union[Type[nn.Module], Sequence[Type[nn.Module]]]
+        ]
+            Normalization layers (i.e., nn.LayerNorm). Can pass in a single
+            type to use across all layers or a list of layers. Must be the
+            same size as the hidden_dim list, if passed as a list.
+        activ_layers : Optional[
+            Union[Type[nn.Module], Sequence[Type[nn.Module]]]
+        ]
+            Activation layers (i.e., nn.Tanh). Can pass in a single
+            type to use across all layers or a list of layers. Must be the
+            same size as the hidden_dim list, if passed as a list.
+        """
         super().__init__()
 
         if norm_layers:
@@ -35,7 +59,6 @@ class MLP(nn.Module):
         else:
             activ_layers = [None] * len(_hidden_dims)
 
-        print(activ_layers)
         dims = [_input_dim] + list(_hidden_dims)
         model = []
 
@@ -54,10 +77,17 @@ class MLP(nn.Module):
         self.model = nn.Sequential(*model)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass through the MLP.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor.
+
+        Returns
+        -------
+        torch.Tensor
+            Feature representation of x.
+        """
         return self.model(x)
-
-
-def init_weights(m: nn.Module) -> None:
-    if isinstance(m, nn.Linear):
-        nn.init.xavier_normal_(m.weight)
-        m.bias.data.fill_(0)

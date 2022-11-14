@@ -1,6 +1,7 @@
 seed: 42
 max_trajectory: 500
-print_every: 10
+print_every: 1
 n_trials: 25
 plot_figsize: !!python/tuple [12, 8]
 axis_fontsize: 20
+plots_dir: plots
