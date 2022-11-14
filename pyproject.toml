@@ -2,4 +2,4 @@
 line-length = 79
 
 [tool.isort]
-force_grid_wrap = 3
+multi_line_output = 3
