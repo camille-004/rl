@@ -6,7 +6,7 @@ import numpy as np
 import torch
 import yaml
 
-CONFIG_DIR = "../config"
+CONFIG_DIR = "config"
 
 
 def load_config(config_name: str) -> Dict:

@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import List, Optional, Sequence, Tuple, Type, Union
 
 import gym
@@ -5,6 +6,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from base import Agent
 
 from models.models import MLP
 from models.utils import init_weights_xav
@@ -26,7 +28,7 @@ N_TRIALS = training_config["n_trials"]
 PRINT_EVERY = training_config["print_every"]
 
 
-class VPGAgent:
+class VanillaPolicyGradient(Agent, ABC):
     """Class to train and run a vanilla policy gradient with an MLP."""
 
     def __init__(
@@ -81,6 +83,8 @@ class VPGAgent:
         render : bool
             Whether to render the environment during training.
         """
+        super().__init__(_train_env, _test_env, render)
+
         assert (
             0.0 <= discount_factor <= 1.0
         ), "Discount factor must be in [0, 1]"
@@ -114,7 +118,6 @@ class VPGAgent:
         self.dist_fn = dist_fn
         self.lr = lr
         self.normalize_returns = normalize_returns
-        self.render = render
 
         self.opt = torch.optim.Adam(self.policy.parameters(), lr=self.lr)
 
@@ -269,29 +272,13 @@ class VPGAgent:
 
         return ep_reward
 
-    def close_env(self) -> None:
-        """
-        Close the environment if rendering during training.
-
-        Returns
-        -------
-        None
-        """
-        if self.render:
-            if self.test_env:
-                self.test_env.close()
-            else:
-                self.train_env.close()
-        else:
-            return None
-
 
 if __name__ == "__main__":
     train_env = gym.make("CartPole-v1")
     test_env = gym.make("CartPole-v1")
     train_env.seed(SEED)
     test_env.seed(SEED + 1)
-    vpg = VPGAgent(train_env, test_env, activ_layers=nn.Tanh)
+    vpg = VanillaPolicyGradient(train_env, test_env, activ_layers=nn.Tanh)
 
     train_rewards = []
     test_rewards = []
