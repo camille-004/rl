@@ -8,9 +8,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from base import Agent
 
-from models.models import MLP
-from models.utils import init_weights_xav
-from utils import load_config, plot_reward, seed_everything
+from src.models.models import MLP
+from src.models.utils import init_weights_xav
+from src.utils import load_config, plot_reward, seed_everything
 
 training_config = load_config("training")
 vpg_config = load_config("vpg")
@@ -304,4 +304,6 @@ if __name__ == "__main__":
             break
 
     vpg.close_env()
-    plot_reward(train_rewards, test_rewards, REWARD_THRES, save="vpg_rew.png")
+    plot_reward(
+        train_rewards, test_rewards, REWARD_THRES, save=vpg_config["plot_name"]
+    )

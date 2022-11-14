@@ -4,4 +4,4 @@ print_every: 1
 n_trials: 25
 plot_figsize: !!python/tuple [12, 8]
 axis_fontsize: 20
-plots_dir: plots
+plots_dir: ../../plots
